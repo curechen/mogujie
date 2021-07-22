@@ -1,14 +1,39 @@
 <template>
-  <div class="tab-bar-item">
-    <div class="icon"><slot name="item-icon"></slot></div>
-    <slot name="item-text"></slot>
+  <div class="tab-bar-item" @click="itemClick">
+    <div v-if="!isActive"><slot name="item-icon"></slot></div>
+    <div v-else><slot name="item-icon-active"></slot></div>
+    <div :style="activeStyle"><slot name="item-text"></slot></div>
   </div>
 </template>
 
 <script>
-export default {
-  name: "TabBarItem",
-};
+  export default {
+    name: "TabBarItem",
+    data () {
+      return {}
+    },
+    props: {
+      path: String,
+      activeColor: {
+        type: String,
+        default: 'red'
+      }
+    },
+    computed: {
+      isActive() {
+        // this是指当前的组件,path是父组件传给子组件的
+        return this.$route.path.indexOf(this.path) !== -1
+      },
+      activeStyle() {
+        return this.isActive ? { color: this.activeColor } : {}
+      }
+    },
+    methods: {
+      itemClick() {
+        this.$router.replace(this.path)
+      }
+    }
+  }
 </script>
 
 <style scoped>
