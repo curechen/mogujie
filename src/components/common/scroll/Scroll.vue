@@ -66,7 +66,7 @@
       },
       // 刷新，重新计算高度
       refresh() {
-        // console.log('执行一次');
+        console.log('执行一次');
         this.scroll && this.scroll.refresh()
       },
       finishPullUp() {

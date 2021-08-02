@@ -50,7 +50,7 @@
 
         // 2.开启定时器
         this.startTimer();
-      }, 100)
+      }, 3000)
     },
     methods: {
 		  /**
@@ -141,7 +141,7 @@
       /**
        * 拖动事件的处理
        */
-      touchStart: function (e) {
+      touchStart: function (e) {// eslint-disable-line no-unused-vars
         // 1.如果正在滚动, 不可以拖动
         if (this.scrolling) return;
 
@@ -152,7 +152,7 @@
         this.startX = e.touches[0].pageX;
       },
 
-      touchMove: function (e) {
+      touchMove: function (e) {// eslint-disable-line no-unused-vars
         // 1.计算出用户拖动的距离
         this.currentX = e.touches[0].pageX;
         this.distance = this.currentX - this.startX;
@@ -163,7 +163,7 @@
         this.setTransform(moveDistance);
       },
 
-      touchEnd: function (e) {
+      touchEnd: function (e) {// eslint-disable-line no-unused-vars
         // 1.获取移动的距离
         let currentMove = Math.abs(this.distance);
 

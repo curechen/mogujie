@@ -84,15 +84,17 @@
       this.getHomeGoods('sell')
     },
     mounted () {
-      const refresh = debounce(this.$refs.scroll.refresh, 500)
-      this.$bus.$on('itemImageLoad', () => {
-        refresh()
-      })
+
     },
     // 路由处于活跃状态时
     activated () {
       this.$refs.scroll.scrollTo(0, this.saveY, 0)
       this.$refs.scroll.refresh()
+
+      const refresh = debounce(this.$refs.scroll.refresh, 500)
+      this.$bus.$on('homeItemImgLoad', () => {
+        refresh()
+      })
     },
     deactivated () {
       this.saveY  = this.$refs.scroll.getScrollY()

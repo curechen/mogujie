@@ -1,6 +1,6 @@
 <template>
   <div class="goods-item" @click="itemClick">
-    <img :src="goodsItem.show.img" @load="imageLoad"/>
+    <img :src="showImg" @load="imageLoad"/>
     <div class="goods-info">
       <p>{{ goodsItem.title }}</p>
       <span class="price">{{ goodsItem.price }}</span>
@@ -23,10 +23,21 @@
     methods: {
       itemClick() {
         // router是当前大的路由器
-        this.$router.push('/detail?iid=' + this.goodsItem.iid)
+        this.$router.push('/detail/' + this.goodsItem.iid)
       },
       imageLoad() {
-        this.$bus.$emit('itemImageLoad')
+        if (this.$route.path.indexOf('/home')) {
+          this.$bus.$emit('homeItemImgLoad')
+        } else if (this.$route.path.indexOf('/detail')) {
+          this.$bus.$emit('detailItemImgLoad')
+        }
+
+        // this.$bus.$emit('itemImgLoad')
+      }
+    },
+    computed: {
+      showImg() {
+        return this.goodsItem.image || this.goodsItem.show.img
       }
     }
   }

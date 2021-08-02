@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- detail要销毁，否则每次进入都是同一个商品，因为是在created阶段发起请求 -->
     <keep-alive exclude="Detail">
       <router-view></router-view>
     </keep-alive>
