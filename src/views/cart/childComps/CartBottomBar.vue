@@ -71,9 +71,10 @@ export default {
     height: 40px;
     align-items: center;
     background-color: #eee;
+    overflow: hidden;
   }
 
-  .check-place {
+  .bottom-bar .check-place {
     display: flex;
     width: 60px;
     margin-left: 5px;
@@ -81,17 +82,17 @@ export default {
     /* line-height: 20px; */
   }
 
-  .check-button {
+  .bottom-bar .check-button {
     width: 20px;
     height: 20px;
   }
 
-  .price {
+  .bottom-bar .price {
     flex: 1;
     margin-left: 10px;
   }
 
-  .calculate {
+  .bottom-bar .calculate {
     width: 90px;
     height: 40px;
     line-height: 40px;
