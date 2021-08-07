@@ -71,7 +71,8 @@
         // 流行，新款，精选的适配
         isTabFixed: false,
         // 在离开路由时，保存Y值
-        saveY: 0
+        saveY: 0,
+        
       }
     },
     created () {
@@ -84,17 +85,19 @@
       this.getHomeGoods('sell')
     },
     mounted () {
-
+      const refresh = debounce(this.$refs.scroll.refresh, 100)
+      this.$bus.$on('homeItemImgLoad', () => {
+        // console.log('zhixi');
+        refresh()
+      })
     },
     // 路由处于活跃状态时
     activated () {
+      // console.log('acacaca');
       this.$refs.scroll.scrollTo(0, this.saveY, 0)
       this.$refs.scroll.refresh()
 
-      const refresh = debounce(this.$refs.scroll.refresh, 500)
-      this.$bus.$on('homeItemImgLoad', () => {
-        refresh()
-      })
+
     },
     deactivated () {
       this.saveY  = this.$refs.scroll.getScrollY()
@@ -150,7 +153,7 @@
       },
       // 加载更多图片
       loadMore() {
-        console.log('woshi');
+        // console.log('woshi');
         this.getHomeGoods(this.currentType)
       },
       // 轮播图图片加载完成后，就取一次tab-control到顶部的高度

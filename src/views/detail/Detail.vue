@@ -1,15 +1,16 @@
 <template>
   <div id="detail">
-    <detail-nav-bar class="detail-nav"/>
+    <detail-nav-bar class="detail-nav" ref="nav" @titleClick="titleClick"/>
     <scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll">
-      <detail-swiper :top-images="topImages" />
+      <detail-swiper :top-images="topImages"/>
       <detail-base-info :goods="goods" />
       <detail-shop-info :shop="shop" />
       <detail-goods-info :detail-info="detailInfo" @imageLoad="imageLoad"/>
-      <detail-param-info :param-info="paramInfo"/>
-      <detail-comment-info :comment-info="commentInfo"/>
-      <goods-list :goods="recommends"/>
+      <detail-param-info :param-info="paramInfo" ref="params"/>
+      <detail-comment-info :comment-info="commentInfo" ref="comment"/>
+      <goods-list :goods="recommends" ref="recommend"/>
     </scroll>
+    <detail-bottom-bar @addCart="addToCart"/>
   </div>
 </template>
 
@@ -21,9 +22,14 @@ import DetailShopInfo from './childComps/DetailShopInfo.vue'
 import DetailGoodsInfo from './childComps/DetailGoodsInfo'
 import DetailParamInfo from './childComps/DetailParamInfo.vue'
 import DetailCommentInfo from './childComps/DetailCommentInfo.vue'
+import DetailBottomBar from './childComps/DetailBottomBar.vue'
 
 import Scroll from 'components/common/scroll/Scroll'
 import GoodsList from 'components/content/goods/GoodsList'
+
+import { debounce } from 'common/utils'
+
+import { mapActions } from 'vuex'
 
 import { getDetail, Goods, Shop, GoodsParam, getRecommend } from 'network/detail'
 
@@ -38,6 +44,7 @@ export default {
     DetailParamInfo,
     DetailCommentInfo,
     GoodsList,
+    DetailBottomBar,
     Scroll
   },
   data() {
@@ -51,6 +58,8 @@ export default {
       paramInfo: {},
       commentInfo: {},
       recommends: [],
+      themeTopYs: [],
+      currentIndex: 0
     }
   },
   created() {
@@ -85,6 +94,17 @@ export default {
         this.commentInfo = data.rate.list[0]
       }
 
+      this.getThemeTopY = debounce(() => {
+        this.themeTopYs = []
+        // console.log(this.$refs.swiper.$el.offsetTop);
+        this.themeTopYs.push(0)
+        this.themeTopYs.push(this.$refs.params.$el.offsetTop - 44)
+        this.themeTopYs.push(this.$refs.comment.$el.offsetTop - 44)
+        this.themeTopYs.push(this.$refs.recommend.$el.offsetTop - 44)
+        this.themeTopYs.push(Number.MAX_VALUE)
+
+        console.log(this.themeTopYs);
+      }, 100)
     })
 
     getRecommend().then(res => {
@@ -97,16 +117,49 @@ export default {
 
       
     this.$bus.$on('detailItemImgLoad', () => {
+      // console.log('zhixi');
       refresh()
     })
   },
   methods: {
+    ...mapActions(['addCart']),
     imageLoad() {
       // refresh是该组件的自定义方法，并不是原生自带的，若用自带的，其实在这里要再获得到scroll组件里的scroll对象
       this.$refs.scroll.refresh()
+
+      this.getThemeTopY()
+
     },
+    // 滚动内容显示对应标题
     contentScroll(position) {
-      console.log(position);
+      // console.log(position);
+      const positionY = -position.y
+      for (let i = 0; i < this.themeTopYs.length-1; i++) {
+        if (this.currentIndex !== i && (positionY >= this.themeTopYs[i] && positionY < this.themeTopYs[i+1])) {
+          this.currentIndex = i
+          this.$refs.nav.currentIndex = this.currentIndex
+        }
+      }
+    },
+    titleClick(index) {
+      this.$refs.scroll.scrollTo(0, -this.themeTopYs[index], 200)
+    },
+    // 添加到购物车
+    addToCart() {
+      const product = {}
+      product.image = this.topImages[0]
+      product.title = this.goods.title
+      product.desc = this.goods.desc
+      product.price = this.goods.realPrice
+      product.iid = this.iid
+
+      // this.$store.dispatch('addCart', product).then(res => {
+      //   console.log(res)
+      // })
+
+      this.addCart(product).then(res => {
+        this.$toast.show(res, 1500)
+      })
     }
   }
 }
@@ -127,6 +180,7 @@ export default {
   }
 
   .content {
-    height: calc(100% - 44px);
+    height: calc(100% - 102px);
+    overflow: hidden;
   }
 </style>
